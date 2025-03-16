@@ -1,24 +1,19 @@
 import * as React from 'react';
-import {
-  useAutocomplete,
-  AutocompleteGetTagProps,
-} from '@mui/base/useAutocomplete';
+import {useAutocomplete, AutocompleteGetTagProps} from '@mui/base/useAutocomplete';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { styled } from '@mui/material/styles';
-import { autocompleteClasses } from '@mui/material/Autocomplete';
+import {styled} from '@mui/material/styles';
+import {autocompleteClasses} from '@mui/material/Autocomplete';
 
 const Root = styled('div')(
-  ({ theme }) => `
-  color: ${
-    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'
-  };
+  ({theme}) => `
+  color: ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'};
   font-size: 14px;
-`
+`,
 );
 
 const InputWrapper = styled('div')(
-  ({ theme }) => `
+  ({theme}) => `
   width: 300px;
   border: 1px solid ${theme.palette.mode === 'dark' ? '#434343' : '#d9d9d9'};
   background-color: ${theme.palette.mode === 'dark' ? '#141414' : '#fff'};
@@ -38,11 +33,7 @@ const InputWrapper = styled('div')(
 
   & input {
     background-color: ${theme.palette.mode === 'dark' ? '#141414' : '#fff'};
-    color: ${
-      theme.palette.mode === 'dark'
-        ? 'rgba(255,255,255,0.65)'
-        : 'rgba(0,0,0,.85)'
-    };
+    color: ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'};
     height: 30px;
     box-sizing: border-box;
     padding: 4px 6px;
@@ -53,7 +44,7 @@ const InputWrapper = styled('div')(
     margin: 0;
     outline: 0;
   }
-`
+`,
 );
 
 interface TagProps extends ReturnType<AutocompleteGetTagProps> {
@@ -61,7 +52,7 @@ interface TagProps extends ReturnType<AutocompleteGetTagProps> {
 }
 
 function Tag(props: TagProps) {
-  const { label, onDelete, ...other } = props;
+  const {label, onDelete, ...other} = props;
   return (
     <div {...other}>
       <span>{label}</span>
@@ -71,15 +62,13 @@ function Tag(props: TagProps) {
 }
 
 const StyledTag = styled(Tag)<TagProps>(
-  ({ theme }) => `
+  ({theme}) => `
   display: flex;
   align-items: center;
   height: 24px;
   margin: 2px;
   line-height: 22px;
-  background-color: ${
-    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fafafa'
-  };
+  background-color: ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fafafa'};
   border: 1px solid ${theme.palette.mode === 'dark' ? '#303030' : '#e8e8e8'};
   border-radius: 2px;
   box-sizing: content-box;
@@ -103,11 +92,11 @@ const StyledTag = styled(Tag)<TagProps>(
     cursor: pointer;
     padding: 4px;
   }
-`
+`,
 );
 
 const Listbox = styled('ul')(
-  ({ theme }) => `
+  ({theme}) => `
   width: 300px;
   margin: 2px 0 0;
   padding: 0;
@@ -150,12 +139,38 @@ const Listbox = styled('ul')(
       color: currentColor;
     }
   }
-`
+`,
 );
 
+const options = [
+  'Biology',
+  'History',
+  'Languages',
+  'Physics',
+  'Mathematics',
+  'Chemistry',
+  'Geography',
+  'Literature',
+  'Art',
+  'Music',
+  'Philosophy',
+  'Economics',
+  'Psychology',
+  'Beginner',
+  'Intermediate',
+  'Advanced',
+  'Expert',
+] as const;
+
+export type Tag = (typeof options)[number];
+
+export function getTagId(option: Tag): number {
+  return options.indexOf(option) + 1;
+}
+
 export default function TagSelector(props: {
-  setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedTags?: string[];
+  setSelectedTags: React.Dispatch<React.SetStateAction<Tag[]>>;
+  selectedTags?: Tag[];
 }) {
   const {
     getRootProps,
@@ -184,53 +199,25 @@ export default function TagSelector(props: {
       <div {...getRootProps()}>
         <InputWrapper ref={setAnchorEl} className={focused ? 'focused' : ''}>
           {value.map((option: string, index: number) => {
-            const { key, ...tagProps } = getTagProps({ index });
+            const {key, ...tagProps} = getTagProps({index});
             return <StyledTag key={key} {...tagProps} label={option} />;
           })}
-          <input {...getInputProps()} placeholder="Add a tag..." />
+          <input {...getInputProps()} placeholder='Add a tag...' />
         </InputWrapper>
       </div>
       {groupedOptions.length > 0 ? (
         <Listbox {...getListboxProps()}>
-          {(groupedOptions as unknown as typeof options).map(
-            (option, index) => {
-              const { ...optionProps } = getOptionProps({ option, index });
-              return (
-                <li key={index} {...optionProps}>
-                  <span>{option}</span>
-                  <CheckIcon fontSize="small" />
-                </li>
-              );
-            }
-          )}
+          {(groupedOptions as unknown as typeof options).map((option, index) => {
+            const {...optionProps} = getOptionProps({option, index});
+            return (
+              <li key={index} {...optionProps}>
+                <span>{option}</span>
+                <CheckIcon fontSize='small' />
+              </li>
+            );
+          })}
         </Listbox>
       ) : null}
     </Root>
   );
-}
-
-const options = [
-  'Biology',
-  'History',
-  'Languages',
-  'Physics',
-  'Mathematics',
-  'Chemistry',
-  'Geography',
-  'Literature',
-  'Art',
-  'Music',
-  'Philosophy',
-  'Economics',
-  'Psychology',
-  'Beginner',
-  'Intermediate',
-  'Advanced',
-  'Expert',
-] as const;
-
-export type Tag = (typeof options)[number];
-
-export function getTagId(option: (typeof options)[number]): number {
-  return options.indexOf(option) + 1;
 }

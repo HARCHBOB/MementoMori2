@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -10,7 +10,7 @@ const Shop: React.FC = () => {
   const updateHeaderColor = async (newColor: string) => {
     try {
       const response = await axios.post('http://localhost:5173/Shop/newColor', {
-        newColor: newColor,
+        newColor,
       });
       if (response.status === 200) {
         setSnackbarMessage(`Card color updated to ${newColor}`);
@@ -28,7 +28,7 @@ const Shop: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{padding: '20px'}}>
       <h1>Shop Page</h1>
       <p>Select a card background color:</p>
       <div>
@@ -93,19 +93,13 @@ const Shop: React.FC = () => {
           Reset to White
         </button>
       </div>
-
-      {/* MUI Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity='success' sx={{width: '100%'}}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {useParams} from 'react-router-dom';
 
 interface Card {
   id: string;
@@ -10,9 +10,7 @@ interface Card {
 }
 
 export default function DeckPage() {
-  const { deckId } = useParams<{ deckId: string }>();
-  const [cards, setCards] = useState<Card[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const {deckId} = useParams<{deckId: string}>();
   const [currentCard, setCurrentCard] = useState<Card | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [color, setColor] = useState('white');
@@ -20,16 +18,13 @@ export default function DeckPage() {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5173/decks/${deckId}/cards`
-        );
+        const response = await fetch(`http://localhost:5173/decks/${deckId}/cards`);
         const text = await response.text();
         console.log('Raw Response:', text);
 
         try {
           const data = JSON.parse(text);
           setColor(data.color);
-          setCards(data.cards);
           if (data.cards.length > 0) setCurrentCard(data.cards[0]);
         } catch (jsonError) {
           console.error('Failed to parse JSON:', jsonError);
@@ -50,27 +45,13 @@ export default function DeckPage() {
         `http://localhost:5173/Decks/${deckId}/cards/update/${currentCard.id}`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(quality),
-        }
+        },
       );
 
       if (response.ok) {
         console.log(`Successfully updated card with quality: ${quality}`);
-
-        setCards((prevCards) => {
-          const updatedCards = prevCards.filter(
-            (card) => card.id !== currentCard.id
-          );
-          if (updatedCards.length > 0) {
-            setCurrentIndex(0);
-            setCurrentCard(updatedCards[0]);
-          } else {
-            setCurrentCard(null);
-          }
-          return updatedCards;
-        });
-
         setShowAnswer(false);
       } else {
         console.error('Failed to update card');
@@ -83,15 +64,12 @@ export default function DeckPage() {
   return (
     <div>
       {currentCard ? (
-        <div
-          className='card-container'
-          style={{ display: 'flex', justifyContent: 'center' }}
-        >
+        <div className='card-container' style={{display: 'flex', justifyContent: 'center'}}>
           <div
             className='card'
             style={{
               backgroundColor: color,
-              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)', // Elevation effect
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
               borderRadius: '12px',
               padding: '20px',
               maxWidth: '500px',
@@ -100,13 +78,9 @@ export default function DeckPage() {
               margin: '20px',
             }}
           >
-            <h2 style={{ margin: '0 0 10px', color: '#333' }}>
-              {currentCard.question}
-            </h2>
+            <h2 style={{margin: '0 0 10px', color: '#333'}}>{currentCard.question}</h2>
             {currentCard.description && (
-              <p style={{ color: '#555', marginBottom: '15px' }}>
-                {currentCard.description}
-              </p>
+              <p style={{color: '#555', marginBottom: '15px'}}>{currentCard.description}</p>
             )}
 
             {showAnswer ? (
@@ -129,10 +103,7 @@ export default function DeckPage() {
               </button>
             )}
 
-            <div
-              className='spaced-repetition-buttons'
-              style={{ marginTop: '20px' }}
-            >
+            <div className='spaced-repetition-buttons' style={{marginTop: '20px'}}>
               <button
                 onClick={() => {
                   setShowAnswer(true);

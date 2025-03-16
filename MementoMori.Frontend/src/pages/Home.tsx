@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -6,9 +6,9 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import DeckCreateButton from './DeckCreateButton.tsx';
+import DeckCreateButton from '../components/DeckCreateButton.tsx';
 import axios from 'axios';
-import { Box, Dialog } from '@mui/material';
+import {Box, Dialog} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -23,18 +23,17 @@ interface UserInformationResponse {
   decks: Deck[] | null;
 }
 
-export default function DeckMenu() {
+export default function Home() {
   const [isLoggedOn, setIsLoggedOn] = useState<boolean>(false);
   const [decks, setDecks] = useState<Deck[] | null>(null);
   const [collectionDecks, setCollectionDecks] = useState<Deck[] | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [deckToDelete, setDeckToDelete] = useState<string | null>(null);
 
-  // Fetch collection decks
   async function fetchCollectionDecks() {
     try {
       const response = await axios.get<UserInformationResponse>(
-        `http://localhost:5173/UserDecks/userCollectionDecksController`
+        `http://localhost:5173/UserDecks/userCollectionDecksController`,
       );
       setCollectionDecks(response.data.decks);
     } catch (error) {
@@ -46,7 +45,7 @@ export default function DeckMenu() {
     async function fetchDeck() {
       try {
         const response = await axios.get<UserInformationResponse>(
-          `http://localhost:5173/UserDecks/userInformation`
+          `http://localhost:5173/UserDecks/userInformation`,
         );
         setIsLoggedOn(response.data.isLoggedIn);
         setDecks(response.data.decks);
@@ -74,8 +73,6 @@ export default function DeckMenu() {
     }
   };
 
-  console.log(collectionDecks);
-
   const handleOpenDialog = (deckId: string) => {
     setDeckToDelete(deckId);
     setOpenDialog(true);
@@ -96,7 +93,6 @@ export default function DeckMenu() {
         alignItems: 'center',
       }}
     >
-      {/* Confirmation Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
@@ -141,7 +137,6 @@ export default function DeckMenu() {
           overflow: 'hidden',
         }}
       >
-        {/* First Column */}
         <Box
           sx={{
             flex: 1,
@@ -151,11 +146,7 @@ export default function DeckMenu() {
             overflowY: 'auto',
           }}
         >
-          <Typography
-            variant='subtitle1'
-            align='center'
-            sx={{ marginBottom: '8px' }}
-          >
+          <Typography variant='subtitle1' align='center' sx={{marginBottom: '8px'}}>
             Your Collection Decks
           </Typography>
           <List>
@@ -167,7 +158,7 @@ export default function DeckMenu() {
                       disableGutters
                       sx={{
                         cursor: 'pointer',
-                        '&:hover': { backgroundColor: '#f0f0f0' },
+                        '&:hover': {backgroundColor: '#f0f0f0'},
                       }}
                     >
                       <ListItemText
@@ -200,15 +191,13 @@ export default function DeckMenu() {
             <Button
               variant='contained'
               color='primary'
-              sx={{ borderRadius: '8px', paddingX: '20px' }}
+              sx={{borderRadius: '8px', paddingX: '20px'}}
               onClick={() => (window.location.href = '/browser')}
             >
               Go to Deck Browser
             </Button>
           </Box>
         </Box>
-
-        {/* Second Column */}
         <Box
           sx={{
             flex: 1,
@@ -217,11 +206,7 @@ export default function DeckMenu() {
             overflowY: 'auto',
           }}
         >
-          <Typography
-            variant='subtitle1'
-            align='center'
-            sx={{ marginBottom: '8px' }}
-          >
+          <Typography variant='subtitle1' align='center' sx={{marginBottom: '8px'}}>
             Your Decks
           </Typography>
           <List>
@@ -235,7 +220,7 @@ export default function DeckMenu() {
                     }
                     sx={{
                       cursor: 'pointer',
-                      '&:hover': { backgroundColor: '#f0f0f0' },
+                      '&:hover': {backgroundColor: '#f0f0f0'},
                     }}
                   >
                     <ListItemText primary={deck.title} />

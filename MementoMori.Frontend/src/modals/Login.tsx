@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   TextField,
   Button,
-  Typography,
   Container,
   Alert,
   FormControl,
@@ -10,57 +9,59 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
-import { useMutation } from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import axios from 'axios';
+import {AuthDialogProps} from './AuthDialog';
 
-export function Register() {
+export function Login(props: AuthDialogProps) {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
-  const { mutate: register, isPending } = useMutation({
+  const {mutate: logIn, isPending} = useMutation({
     mutationFn: () => {
-      return axios.post<string>('http://localhost:5173/auth/register', {
+      return axios.post<string>('http://localhost:5173/auth/login', {
         username,
         password,
         rememberMe,
       });
     },
     onSuccess: () => {
-      window.location.href = `/`;
+      if (props.isAuthenticatedCallback) {
+        props.isAuthenticatedCallback();
+      }
+      location.reload();
+      props.closeCallback();
     },
     onError: () => {
-      setError('Register failed. This username already exists.');
+      setError('Login failed. Please check your username and password.');
     },
   });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
-    register();
+    logIn();
   };
 
   return (
-    <Container maxWidth="xs">
-      <Typography variant="h4" component="h1" gutterBottom>
-        Register
-      </Typography>
+    <Container maxWidth='xs'>
       <form onSubmit={handleSubmit}>
         <FormControl fullWidth>
           <TextField
-            label="Username"
-            variant="outlined"
-            margin="normal"
+            label='Username'
+            variant='outlined'
+            margin='normal'
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
           <TextField
-            label="Password"
-            variant="outlined"
-            type="password"
-            margin="normal"
+            label='Password'
+            variant='outlined'
+            type='password'
+            margin='normal'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -70,30 +71,25 @@ export function Register() {
               <Checkbox
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                color="primary"
+                color='primary'
               />
             }
-            label="Remember Me"
+            label='Remember Me'
           />
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && <Alert severity='error'>{error}</Alert>}
           {isPending ? (
             <Button
-              type="submit"
-              variant="contained"
-              color="primary"
+              type='submit'
+              variant='contained'
+              color='primary'
               disabled
-              style={{ marginTop: '16px' }}
+              style={{marginTop: '16px'}}
             >
               <CircularProgress size={24} />
             </Button>
           ) : (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginTop: '16px' }}
-            >
-              Register
+            <Button type='submit' variant='contained' color='primary' style={{marginTop: '16px'}}>
+              Login
             </Button>
           )}
         </FormControl>

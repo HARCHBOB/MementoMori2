@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import {
   Typography,
   TextField,
@@ -14,16 +14,17 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import TagSelector, { getTagId } from '../deckBrowser/TagSelector';
-import { List, ListItem, ListItemText } from '@mui/material';
+import TagSelector, {getTagId} from '../components/TagSelector';
+import {List, ListItem, ListItemText} from '@mui/material';
 import Divider from '@mui/material/Divider';
+import {Tag} from '../components/TagSelector';
 interface Deck {
   id: string;
   isPublic: boolean;
   title: string;
   description?: string;
   cardCount: number;
-  tags: string[];
+  tags: Tag[];
   cards: Card[];
 }
 interface Card {
@@ -39,7 +40,7 @@ interface NewCard {
 }
 
 export default function EditDeck() {
-  const { deckId } = useParams<{ deckId: string }>();
+  const {deckId} = useParams<{deckId: string}>();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [originalDeck, setOriginalDeck] = useState<Deck | null>(null);
   const [activeEditCardId, setActiveEditCardId] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export default function EditDeck() {
   const [answerError, setAnswerError] = useState<string | null>(null);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [numberForId, setNumberForId] = useState<number>(0);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [alteredCards, setAlteredCards] = useState<Card[] | null>(null);
   const [newCards, setNewCards] = useState<NewCard[] | null>(null);
   const [removeCards, setRemoveCards] = useState<string[] | null>(null);
@@ -91,7 +92,7 @@ export default function EditDeck() {
 
   useEffect(() => {
     if (deck) {
-      setDeck({ ...deck, tags: selectedTags });
+      setDeck({...deck, tags: selectedTags});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTags]);
@@ -113,23 +114,23 @@ export default function EditDeck() {
     setShowTags(false);
   };
 
-  const handleTitleChange = (event: { target: { value: any } }) => {
+  const handleTitleChange = (event: {target: {value: any}}) => {
     const value = event.target.value.trim();
     if (!value) {
       setTitleError('Title cannot be empty.');
     } else {
       setTitleError(null);
     }
-    if (deck) setDeck({ ...deck, title: event.target.value });
+    if (deck) setDeck({...deck, title: event.target.value});
   };
 
-  const handleDescriptionChange = (event: { target: { value: any } }) => {
+  const handleDescriptionChange = (event: {target: {value: any}}) => {
     const value = event.target.value;
-    if (deck) setDeck({ ...deck, description: value });
+    if (deck) setDeck({...deck, description: value});
   };
 
   const handleIsPublicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (deck) setDeck({ ...deck, isPublic: event.target.checked });
+    if (deck) setDeck({...deck, isPublic: event.target.checked});
   };
 
   const deleteCard = (index: number) => {
@@ -137,7 +138,7 @@ export default function EditDeck() {
       const cardToDelete = deck.cards[index];
 
       const updatedCards = deck.cards.filter((_, i) => i !== index);
-      setDeck({ ...deck, cards: updatedCards });
+      setDeck({...deck, cards: updatedCards});
       setAlteredCards((prevAlteredCards) => {
         if (!prevAlteredCards) return null;
 
@@ -151,7 +152,7 @@ export default function EditDeck() {
           (newCard) =>
             newCard.question === cardToDelete.question &&
             newCard.description === cardToDelete.description &&
-            newCard.answer === cardToDelete.answer
+            newCard.answer === cardToDelete.answer,
         );
 
         if (isCardInNewCards) {
@@ -159,7 +160,7 @@ export default function EditDeck() {
             (newCard) =>
               newCard.question !== cardToDelete.question ||
               newCard.description !== cardToDelete.description ||
-              newCard.answer !== cardToDelete.answer
+              newCard.answer !== cardToDelete.answer,
           );
         }
 
@@ -210,7 +211,7 @@ export default function EditDeck() {
       };
       setNumberForId(numberForId + 1);
       setNewCards((prevNewCards) => [...(prevNewCards || []), addCard]);
-      setDeck({ ...deck, cards: [...deck.cards, newCard] });
+      setDeck({...deck, cards: [...deck.cards, newCard]});
     }
 
     setNewCardQuestion('');
@@ -220,8 +221,8 @@ export default function EditDeck() {
   };
 
   const addCard = () => {
-    setActiveEditCardId(null); // Close edit mode
-    setShowAddCardDialog(true); // Open Add Card dialog
+    setActiveEditCardId(null);
+    setShowAddCardDialog(true);
     setNewCardQuestion('');
     setNewCardAnswer('');
     setNewCardDescription('');
@@ -256,8 +257,8 @@ export default function EditDeck() {
       };
 
       updatedCards[index] = updatedCard;
-      setDeck({ ...deck, cards: updatedCards });
-      const originalCard = { ...deck.cards[index] };
+      setDeck({...deck, cards: updatedCards});
+      const originalCard = {...deck.cards[index]};
       let xx = 0;
       setNewCards((prevNewCards) => {
         if (!prevNewCards) return null;
@@ -279,14 +280,11 @@ export default function EditDeck() {
         });
         return updatedNewCards;
       });
-      // If the card was not in newCards, add it to alteredCards
       if (xx !== 0) {
         setAlteredCards((prevAlteredCards) => {
           if (!prevAlteredCards) return [updatedCard];
 
-          const existingIndex = prevAlteredCards.findIndex(
-            (card) => card.id === updatedCard.id
-          );
+          const existingIndex = prevAlteredCards.findIndex((card) => card.id === updatedCard.id);
 
           if (existingIndex !== -1) {
             const updatedAlteredCards = [...prevAlteredCards];
@@ -299,7 +297,6 @@ export default function EditDeck() {
       }
     }
 
-    // Reset the active edit fields
     setActiveEditCardId(null);
     setEditQuestion('');
     setEditAnswer('');
@@ -367,7 +364,7 @@ export default function EditDeck() {
           Deck: postDeck,
           NewCards: newCards,
           RemovedCards: removeCards,
-          Cards: alteredCards, // Will be null
+          Cards: alteredCards,
         });
         if (response.status === 200) {
           const deckGuid = response.data;
@@ -387,57 +384,50 @@ export default function EditDeck() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2, boxShadow: 3 }}>
+    <Box sx={{maxWidth: 600, mx: 'auto', mt: 4, p: 2, boxShadow: 3}}>
       {deckId === '00000000-0000-0000-0000-000000000000' ? (
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Create Deck {deck.title}
         </Typography>
       ) : (
-        <Typography variant="h4" gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Edit Deck {deck.title}
         </Typography>
       )}
       <TextField
-        label="Title"
+        label='Title'
         fullWidth
-        variant="outlined"
-        margin="normal"
+        variant='outlined'
+        margin='normal'
         value={deck.title}
         onChange={handleTitleChange}
         error={!!titleError}
         helperText={titleError || ' '}
       />
       <TextField
-        label="Description"
+        label='Description'
         fullWidth
         multiline
         rows={4}
-        variant="outlined"
-        margin="normal"
+        variant='outlined'
+        margin='normal'
         value={deck.description || ''}
         onChange={handleDescriptionChange}
       />
       {showTags ? (
-        <TagSelector
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-        />
+        <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
       ) : null}
-      <Box sx={{ display: 'flex', justifyContent: 'left', mb: 2 }}>
+      <Box sx={{display: 'flex', justifyContent: 'left', mb: 2}}>
         <FormControlLabel
           control={
-            <Switch
-              checked={deck.isPublic}
-              onChange={handleIsPublicChange}
-              color="primary"
-            />
+            <Switch checked={deck.isPublic} onChange={handleIsPublicChange} color='primary' />
           }
           label={deck.isPublic ? 'Public' : 'Private'}
         />
       </Box>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant='h5' gutterBottom>
         <Divider
-          variant="fullWidth"
+          variant='fullWidth'
           sx={{
             '&::before, &::after': {
               borderColor: '#4657b9',
@@ -456,17 +446,17 @@ export default function EditDeck() {
               display: 'flex',
               alignItems: 'center',
               transition: 'background-color 0.3s, box-shadow 0.3s',
-              borderRadius: '8px', // Rounded corners for the ListItem
+              borderRadius: '8px',
               '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.075)', // Light gray background on hover
-                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)', // Shadow effect on hover
+                backgroundColor: 'rgba(0, 0, 0, 0.075)',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
               },
             }}
           >
             <ListItemText
               primary={
                 <>
-                  <Typography component="span" fontStyle="italic">
+                  <Typography component='span' fontStyle='italic'>
                     Question {index + 1}:<br></br>
                   </Typography>
                   {card.question}
@@ -475,9 +465,9 @@ export default function EditDeck() {
               secondary={`Answer: ${card.answer}`}
             />
             <Button
-              variant="contained"
-              color="primary"
-              sx={{ ml: 2 }}
+              variant='contained'
+              color='primary'
+              sx={{ml: 2}}
               onClick={() => toggleEditField(card.id)}
             >
               Edit Card
@@ -491,26 +481,26 @@ export default function EditDeck() {
               <DialogTitle>Edit Card Details</DialogTitle>
               <DialogContent>
                 <TextField
-                  label="Edit Question"
+                  label='Edit Question'
                   fullWidth
-                  variant="outlined"
-                  margin="normal"
+                  variant='outlined'
+                  margin='normal'
                   value={editQuestion}
                   onChange={(e) => setEditQuestion(e.target.value)}
                   error={!!questionError}
                   helperText={questionError || ' '}
                 />
                 <TextField
-                  label="Edit Description"
+                  label='Edit Description'
                   fullWidth
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                 />
                 <TextField
-                  label="Edit Answer"
+                  label='Edit Answer'
                   fullWidth
-                  variant="outlined"
-                  margin="normal"
+                  variant='outlined'
+                  margin='normal'
                   value={editAnswer}
                   onChange={(e) => setEditAnswer(e.target.value)}
                   error={!!answerError}
@@ -518,22 +508,14 @@ export default function EditDeck() {
                 />
               </DialogContent>
               <DialogActions>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => modifyCard(index)}
-                >
+                <Button variant='contained' color='success' onClick={() => modifyCard(index)}>
                   Save
                 </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => deleteCard(index)}
-                >
+                <Button variant='contained' color='error' onClick={() => deleteCard(index)}>
                   Delete
                 </Button>
                 <Button
-                  variant="contained"
+                  variant='contained'
                   onClick={() => {
                     setActiveEditCardId(null);
                     setAnswerError('');
@@ -547,55 +529,45 @@ export default function EditDeck() {
           </ListItem>
         ))}
       </List>
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ mt: 2 }}
-        onClick={addCard}
-      >
+      <Button variant='contained' color='primary' fullWidth sx={{mt: 2}} onClick={addCard}>
         Add Card
       </Button>
-      <Dialog
-        open={showAddCardDialog}
-        onClose={() => setShowAddCardDialog(false)}
-      >
+      <Dialog open={showAddCardDialog} onClose={() => setShowAddCardDialog(false)}>
         <DialogTitle>Add New Card</DialogTitle>
         <DialogContent>
           <TextField
-            label="Question"
+            label='Question'
             fullWidth
-            variant="outlined"
-            margin="normal"
+            variant='outlined'
+            margin='normal'
             value={newCardQuestion}
             onChange={(e) => setNewCardQuestion(e.target.value)}
-            error={!!questionError} // Show error if question is empty
-            helperText={questionError || ' '} // Show error message if validation fails
+            error={!!questionError}
+            helperText={questionError || ' '}
           />
           <TextField
-            label="Description"
+            label='Description'
             fullWidth
             value={newCardDescription}
             onChange={(e) => setNewCardDescription(e.target.value)}
           />
           <TextField
-            label="Answer"
+            label='Answer'
             fullWidth
-            variant="outlined"
-            margin="normal"
+            variant='outlined'
+            margin='normal'
             value={newCardAnswer}
             onChange={(e) => setNewCardAnswer(e.target.value)}
-            error={!!answerError} // Show error if answer is empty
-            helperText={answerError || ' '} // Show error message if validation fails
+            error={!!answerError}
+            helperText={answerError || ' '}
           />
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="success" onClick={createCard}>
-            {/*Can implement  in this onclick the adding of a new card for quests, advisably have a new card array that you can create a new post for once user clicks on save all changes*/}
+          <Button variant='contained' color='success' onClick={createCard}>
             Create
           </Button>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={() => {
               setShowAddCardDialog(false);
               setAnswerError('');
@@ -618,30 +590,30 @@ export default function EditDeck() {
         >
           {deckId === '00000000-0000-0000-0000-000000000000' ? (
             <Button
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               fullWidth
-              sx={{ flex: 1 }}
+              sx={{flex: 1}}
               onClick={() => saveAllChanges()}
             >
               Create Deck
             </Button>
           ) : (
             <Button
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               fullWidth
-              sx={{ flex: 1 }}
+              sx={{flex: 1}}
               onClick={() => saveAllChanges()}
             >
               Save all changes
             </Button>
           )}
           <Button
-            variant="contained"
-            color="primary"
+            variant='contained'
+            color='primary'
             fullWidth
-            sx={{ flex: 1 }}
+            sx={{flex: 1}}
             onClick={() => revertChanges()}
           >
             Revert Changes

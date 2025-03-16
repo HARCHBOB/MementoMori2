@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
-import { useMutation } from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 
 import {
   Chip,
@@ -15,9 +15,9 @@ import {
   Table,
   Link,
 } from '@mui/material';
-import SearchBar from './SearchBar';
-import { Tag } from './TagSelector';
-import TagSelector from './TagSelector';
+import SearchBar from '../components/SearchBar';
+import {Tag} from '../components/TagSelector';
+import TagSelector from '../components/TagSelector';
 
 export type browserRowData = {
   id: string;
@@ -30,14 +30,14 @@ export type browserRowData = {
 
 export default function Browser() {
   const [searchString, setSearchString] = useState<string>('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [tableRows, setTableRows] = useState<browserRowData[]>([]);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (params: { searchString: string; selectedTags: string[] }) => {
+  const {mutate, isPending} = useMutation({
+    mutationFn: (params: {searchString: string; selectedTags: string[]}) => {
       return axios.get<browserRowData[]>('http://localhost:5173/DeckBrowser/getDecks', {
         params: params,
-        paramsSerializer: { indexes: null },
+        paramsSerializer: {indexes: null},
       });
     },
     onSuccess: (response) => {
@@ -46,7 +46,7 @@ export default function Browser() {
   });
 
   useEffect(() => {
-    mutate({ searchString, selectedTags });
+    mutate({searchString, selectedTags});
   }, [searchString, selectedTags, mutate]);
 
   return (
@@ -83,19 +83,19 @@ export default function Browser() {
         </Box>
       </Box>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{minWidth: 650}} aria-label='simple table'>
           <TableHead>
             <TableRow>
               <TableCell>
                 <b>Title</b>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align='right'>
                 <b>Rating</b>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align='right'>
                 <b>Modified</b>
               </TableCell>
-              <TableCell align="right">
+              <TableCell align='right'>
                 <b>Cards</b>
               </TableCell>
             </TableRow>
@@ -103,17 +103,14 @@ export default function Browser() {
           <TableBody>
             {isPending ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={4} align='center'>
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : (
               tableRows.map((deck) => (
-                <TableRow
-                  key={deck.id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
+                <TableRow key={deck.id} sx={{'&:last-child td, &:last-child th': {border: 0}}}>
+                  <TableCell component='th' scope='row'>
                     <Box
                       sx={{
                         display: 'flex',
@@ -122,17 +119,17 @@ export default function Browser() {
                         gap: 1,
                       }}
                     >
-                      <Link href={`/decks/${deck.id}`} underline="hover">
+                      <Link href={`/decks/${deck.id}`} underline='hover'>
                         <b>{deck.title}</b>
                       </Link>
                       {deck.tags?.map((tag) => (
-                        <Chip label={tag} variant="outlined" />
+                        <Chip label={tag} variant='outlined' />
                       ))}
                     </Box>
                   </TableCell>
-                  <TableCell align="right">{deck.rating}</TableCell>
-                  <TableCell align="right">{deck.modified}</TableCell>
-                  <TableCell align="right">{deck.cards}</TableCell>
+                  <TableCell align='right'>{deck.rating}</TableCell>
+                  <TableCell align='right'>{deck.modified}</TableCell>
+                  <TableCell align='right'>{deck.cards}</TableCell>
                 </TableRow>
               ))
             )}

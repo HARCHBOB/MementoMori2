@@ -10,45 +10,18 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import Button from '@mui/material/Button';
 import HomeIcon from '@mui/icons-material/Home';
-import Breadcrumb from './Breadcrumb';
-import React, { useState, useEffect } from 'react';
+import Breadcrumb from './Breadcrumb.tsx';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { AuthDialog } from '../AuthDialog/AuthDialog.tsx';
+import {AuthDialog} from '../modals/AuthDialog.tsx';
+import {useNavigate} from 'react-router-dom';
 
 export default function MainHeader() {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAuthDialogVisible, setIsAuthDialogVisible] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isAuthDialogVisible, setIsAuthDialogVisible] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  const handleAuthDialogClose = async () => {
-    setIsAuthDialogVisible(false);
-
-    const response = await axios.get('http://localhost:5173/auth/loginResponse');
-    setIsLoggedIn(response.data);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await axios.post('http://localhost:5173/auth/logout');
-      if (response.status === 200) {
-        setIsLoggedIn(false);
-        location.reload();
-      } else {
-        console.error('Error logging out:', response.data);
-      }
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
 
   useEffect(() => {
     const fetchLoginStatus = async () => {
@@ -59,16 +32,39 @@ export default function MainHeader() {
         console.error('Error fetching login status:', error);
       }
     };
-
     fetchLoginStatus();
   }, []);
 
-  return (
-    <React.Fragment>
-      {isAuthDialogVisible ? (
-        <AuthDialog closeCallback={handleAuthDialogClose} />
-      ) : null}
+  const handleAuthDialogClose = async () => {
+    setIsAuthDialogVisible(false);
+    try {
+      const response = await axios.get('http://localhost:5173/auth/loginResponse');
+      setIsLoggedIn(response.data);
+    } catch (error) {
+      console.error('Error updating login status:', error);
+    }
+  };
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post('http://localhost:5173/auth/logout');
+      if (response.status === 200) {
+        setIsLoggedIn(false);
+        window.location.reload();
+      } else {
+        console.error('Error logging out:', response.data);
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  return (
+    <>
+      {isAuthDialogVisible ? <AuthDialog closeCallback={handleAuthDialogClose} /> : null}
       <Box
         sx={{
           position: 'fixed',
@@ -88,16 +84,10 @@ export default function MainHeader() {
           zIndex: 99,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="Return home">
-            <IconButton
-              sx={{ cursor: 'pointer' }}
-              aria-label="Return to home page"
-              onClick={() => {
-                window.location.href = `/`;
-              }}
-            >
-              <Avatar sx={{ width: 32, height: 32, color: 'indigo' }}>
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <Tooltip title='Return home'>
+            <IconButton onClick={() => navigate('/')} sx={{cursor: 'pointer'}}>
+              <Avatar sx={{width: 32, height: 32, color: 'indigo'}}>
                 <HomeIcon />
               </Avatar>
             </IconButton>
@@ -105,47 +95,32 @@ export default function MainHeader() {
           <Breadcrumb />
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
           <Button
-            sx={{ minWidth: 150, color: 'indigo', fontSize: 20 }}
-            style={{ textTransform: 'capitalize' }}
-            variant="text"
-            onClick={() =>
-              (window.location.href = `http://localhost:5173/shop`)
-            }
+            sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+            variant='text'
+            onClick={() => navigate('/shop')}
           >
             Shop
           </Button>
           <Button
-            sx={{ minWidth: 150, color: 'indigo', fontSize: 20 }}
-            style={{ textTransform: 'capitalize' }}
-            variant="text"
-            onClick={() => {
-              window.location.href = `/browser`;
-            }}
+            sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+            variant='text'
+            onClick={() => navigate('/browser')}
           >
             Deck browser
           </Button>
 
           {isLoggedIn ? (
-            <Tooltip title="Account settings">
-              <IconButton
-                style={{ marginLeft: 'auto' }}
-                onClick={handleClick}
-                size="small"
-                sx={{ ml: 2 }}
-                aria-controls={open ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>D</Avatar>
+            <Tooltip title='Account settings'>
+              <IconButton onClick={handleClick} size='small' sx={{ml: 2}}>
+                <Avatar sx={{width: 32, height: 32}}>D</Avatar>
               </IconButton>
             </Tooltip>
           ) : (
             <Button
-              sx={{ minWidth: 150, color: 'indigo', fontSize: 20 }}
-              style={{ textTransform: 'capitalize' }}
-              variant="text"
+              sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+              variant='text'
               onClick={() => setIsAuthDialogVisible(true)}
             >
               Log In
@@ -156,7 +131,7 @@ export default function MainHeader() {
 
       <Menu
         anchorEl={anchorEl}
-        id="account-menu"
+        id='account-menu'
         open={open}
         onClose={handleClose}
         onClick={handleClose}
@@ -164,15 +139,13 @@ export default function MainHeader() {
           paper: {
             elevation: 0,
             sx: {
-              border: 1,
-              borderWidth: 2,
+              border: 2,
               borderColor: '#D4A017',
-              borderRadius: '6px',
+              borderRadius: 2,
               bgcolor: 'white',
-              color: 'primary',
               overflow: 'visible',
-              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               mt: 1.5,
+              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
               '& .MuiAvatar-root': {
                 width: 32,
                 height: 32,
@@ -193,8 +166,8 @@ export default function MainHeader() {
             },
           },
         }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        transformOrigin={{horizontal: 'right', vertical: 'top'}}
+        anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
       >
         <MenuItem onClick={handleClose}>
           <Avatar /> My account
@@ -202,17 +175,17 @@ export default function MainHeader() {
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <Settings sx={{ color: 'black' }} fontSize="small" />
+            <Settings sx={{color: 'black'}} fontSize='small' />
           </ListItemIcon>
           Settings
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <Logout sx={{ color: 'black' }} fontSize="small" />
+            <Logout sx={{color: 'black'}} fontSize='small' />
           </ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
-    </React.Fragment>
+    </>
   );
 }
