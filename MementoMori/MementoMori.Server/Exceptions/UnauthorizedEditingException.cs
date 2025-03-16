@@ -1,9 +1,8 @@
-﻿namespace MementoMori.Server.Exceptions
+﻿namespace MementoMori.Server.Exceptions;
+
+public class UnauthorizedEditingException : Exception
 {
-    public class UnauthorizedEditingException : Exception
+    public UnauthorizedEditingException() : base("Editing was blocked due to lack of access") 
     {
-        public UnauthorizedEditingException() : base("Editing was blocked due to lack of access") 
-        {
-        }
     }
 }

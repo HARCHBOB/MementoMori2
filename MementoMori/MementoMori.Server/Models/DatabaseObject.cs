@@ -1,12 +1,11 @@
-﻿namespace MementoMori.Server.Models
-{
-    public class DatabaseObject
-    {
-        public Guid Id { get; set; }
+﻿namespace MementoMori.Server.Models;
 
-        virtual public bool CanEdit(Guid editorId)
-        {
-            return false;
-        }
+public class DatabaseObject
+{
+    public Guid Id { get; set; }
+
+    virtual public bool CanEdit(Guid editorId)
+    {
+        return false;
     }
 }

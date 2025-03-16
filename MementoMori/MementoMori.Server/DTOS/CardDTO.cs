@@ -1,14 +1,13 @@
-﻿namespace MementoMori.Server.DTOS
+﻿namespace MementoMori.Server.DTOS;
+
+public class CardDTO
 {
-    public class CardDTO
-    {
-        public required Guid Id { get; set; }
+    public required Guid Id { get; set; }
 
-        public required string Question { get; set; }
+    public required string Question { get; set; }
 
-        public string? Description { get; set; }
+    public string? Description { get; set; }
 
-        public required string Answer { get; set; }
+    public required string Answer { get; set; }
 
-    }
 }

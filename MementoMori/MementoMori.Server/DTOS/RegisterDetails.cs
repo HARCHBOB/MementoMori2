@@ -1,7 +1,6 @@
-﻿namespace MementoMori.Server.DTOS
-{
-    public class RegisterDetails : LoginDetails
-    {
+﻿namespace MementoMori.Server.DTOS;
 
-    }
+public class RegisterDetails : LoginDetails
+{
+
 }

@@ -1,12 +1,11 @@
-﻿namespace MementoMori.Server.Models
+﻿namespace MementoMori.Server.Models;
+
+public class CardEditableProperties : DatabaseObject
 {
-    public class CardEditableProperties : DatabaseObject
-    {
-        public required string Question { get; set; }
+    public required string Question { get; set; }
 
-        public string? Description { get; set; }
+    public string? Description { get; set; }
 
-        public required string Answer { get; set; }
+    public required string Answer { get; set; }
 
-    }
 }

@@ -1,7 +1,6 @@
-namespace MementoMori.Server.DTOS
+namespace MementoMori.Server.DTOS;
+
+public class LoginResponse
 {
-    public class LoginResponse
-    {
-        public bool IsLoggedIn { get; set; }
-    }
+    public bool IsLoggedIn { get; set; }
 }

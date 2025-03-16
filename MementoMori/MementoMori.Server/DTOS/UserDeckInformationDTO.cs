@@ -1,10 +1,9 @@
-namespace MementoMori.Server.DTOS
+namespace MementoMori.Server.DTOS;
+
+public class UserDeckInformationDTO
 {
-    public class UserDeckInformationDTO
-    {
-        public UserDeckDTO[]? Decks { get; set; }
+    public UserDeckDTO[]? Decks { get; set; }
 
-        public bool IsLoggedIn { get; set; }
+    public bool IsLoggedIn { get; set; }
 
-    }
 }

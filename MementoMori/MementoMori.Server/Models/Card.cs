@@ -1,16 +1,13 @@
 using MementoMori.Server.Models;
 
-namespace MementoMori.Server
+namespace MementoMori.Server;
+
+public class Card : CardEditableProperties
 {
+    public Guid DeckId { get; set;  }
 
-    public class Card : CardEditableProperties
+    public override bool CanEdit(Guid editorId)
     {
-        public Guid DeckId { get; set;  }
-
-        public override bool CanEdit(Guid editorId)
-        {
-            return DeckId == editorId;
-        }
+        return DeckId == editorId;
     }
 }
-
