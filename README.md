@@ -11,7 +11,8 @@ createdb MementoMori
 psql
 
 alter user postgres with encyrpted password 'SuperSecretPassword';
-grant all privileges on database "MementoMori" to postgres
+grant all privileges on database "MementoMori" to postgres;
+\q
 
 cd MementoMori/MementoMori.Server
 dotnet tool install --global dotnet-ef
