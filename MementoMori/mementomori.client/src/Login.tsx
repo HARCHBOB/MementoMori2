@@ -21,7 +21,7 @@ export function Login() {
 
   const { mutate: logIn, isPending } = useMutation({
     mutationFn: () => {
-      return axios.post<string>('/auth/login', {
+      return axios.post<string>('http://localhost:5173/auth/login', {
         username,
         password,
         rememberMe,

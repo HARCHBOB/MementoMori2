@@ -9,7 +9,7 @@ const Shop: React.FC = () => {
 
   const updateHeaderColor = async (newColor: string) => {
     try {
-      const response = await axios.post('/Shop/newColor', {
+      const response = await axios.post('http://localhost:5173/Shop/newColor', {
         newColor: newColor,
       });
       if (response.status === 200) {

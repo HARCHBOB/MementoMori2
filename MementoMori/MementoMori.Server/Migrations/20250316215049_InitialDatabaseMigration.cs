@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MementoMori.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class OneMigrationtoRuleThemAll : Migration
+    public partial class InitialDatabaseMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

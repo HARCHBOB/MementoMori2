@@ -21,7 +21,7 @@ export default function DeckPage() {
     const fetchCards = async () => {
       try {
         const response = await fetch(
-          `https://localhost:5173/decks/${deckId}/cards`
+          `http://localhost:5173/decks/${deckId}/cards`
         );
         const text = await response.text();
         console.log('Raw Response:', text);
@@ -47,7 +47,7 @@ export default function DeckPage() {
 
     try {
       const response = await fetch(
-        `https://localhost:5173/Decks/${deckId}/cards/update/${currentCard.id}`,
+        `http://localhost:5173/Decks/${deckId}/cards/update/${currentCard.id}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

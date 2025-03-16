@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MementoMori.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241217093135_One Migration to Rule Them All")]
-    partial class OneMigrationtoRuleThemAll
+    [Migration("20250316215049_InitialDatabaseMigration")]
+    partial class InitialDatabaseMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

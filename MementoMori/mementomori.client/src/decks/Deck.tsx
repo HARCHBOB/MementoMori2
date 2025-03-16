@@ -108,7 +108,7 @@ function Buttons(props: ButtonProps) {
   };
   const { mutate: AddToCollection } = useMutation({
     mutationFn: async () => {
-      return axios.post(`/Decks/${deckId}/addToCollection`);
+      return axios.post(`http://localhost:5173/Decks/${deckId}/addToCollection`);
     },
     onSuccess: (response) => {
       console.log(response.data.message);
@@ -121,7 +121,7 @@ function Buttons(props: ButtonProps) {
 
   const { mutate: RemoveFromCollection } = useMutation({
     mutationFn: async () => {
-      return axios.post(`/UserDecks/userCollectionRemoveDeckController`, {
+      return axios.post(`http://localhost:5173/UserDecks/userCollectionRemoveDeckController`, {
         id: deckId,
       });
     },
@@ -136,7 +136,7 @@ function Buttons(props: ButtonProps) {
 
   const onDeleteClick = async () => {
     try {
-      const response = await axios.post(`/Decks/${deckId}/deleteDeck`, {
+      const response = await axios.post(`http://localhost:5173/Decks/${deckId}/deleteDeck`, {
         Id: deckId,
       });
       if (response.status === 200) {
@@ -275,7 +275,7 @@ export function Deck() {
   const { data, isFetched, isError } = useQuery({
     queryKey: ['main', 'deck', 'deckId'] as const,
     queryFn: async () => {
-      const response = await axios.get<DeckQueryData>(`/Decks/${deckId}/deck`);
+      const response = await axios.get<DeckQueryData>(`http://localhost:5173/Decks/${deckId}/deck`);
       return response.data;
     },
   });

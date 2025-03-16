@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+		<SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
 	</PropertyGroup>
 
 	<ItemGroup>

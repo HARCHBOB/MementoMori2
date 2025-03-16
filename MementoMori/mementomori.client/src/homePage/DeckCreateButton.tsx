@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 const RedirectButton = () => {
   const handleRedirect = () => {
     window.location.href =
-      'https://localhost:5173/decks/00000000-0000-0000-0000-000000000000/edit';
+      'http://localhost:5173/decks/00000000-0000-0000-0000-000000000000/edit';
   };
 
   return (

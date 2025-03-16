@@ -34,7 +34,7 @@ const DynamicBreadcrumb: React.FC = () => {
     queryFn: async () => {
       if (isNewDeck) return 'New deck'; // Display "New deck" if it's the specific UUID route
       if (!deckId) throw new Error('deckId not found');
-      const response = await axios.get(`/Decks/${deckId}/DeckTitle`);
+      const response = await axios.get(`http://localhost:5173/Decks/${deckId}/DeckTitle`);
       return response.data;
     },
     enabled: !isNewDeck && !!deckId,

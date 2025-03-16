@@ -76,7 +76,7 @@ export default function EditDeck() {
         setSelectedTags([]);
       } else {
         try {
-          const response = await axios.get(`/Decks/${deckId}/EditorView`);
+          const response = await axios.get(`http://localhost:5173/Decks/${deckId}/EditorView`);
           const fetchedDeck = response.data as Deck;
           setDeck(fetchedDeck);
           setOriginalDeck(fetchedDeck);
@@ -327,7 +327,7 @@ export default function EditDeck() {
   if (!deck) return <Typography>Loading...</Typography>;
   const saveAllChanges = async () => {
     async function fetchDeck() {
-      const response = await axios.get(`/Decks/${deckId}/EditorView`);
+      const response = await axios.get(`http://localhost:5173/Decks/${deckId}/EditorView`);
       const fetchedDeck = response.data as Deck;
       setDeck(fetchedDeck);
       setOriginalDeck(fetchedDeck);
@@ -345,7 +345,7 @@ export default function EditDeck() {
         tags: deck.tags.map((tag) => getTagId(tag)),
       };
       if (deckId !== '00000000-0000-0000-0000-000000000000') {
-        const response = await axios.post(`/Decks/${deckId}/editDeck`, {
+        const response = await axios.post(`http://localhost:5173/Decks/${deckId}/editDeck`, {
           Deck: postDeck,
           NewCards: newCards,
           RemovedCards: removeCards,
@@ -363,7 +363,7 @@ export default function EditDeck() {
           return;
         }
         postDeck.id = '00000000-0000-0000-0000-000000000000';
-        const response = await axios.post(`/Decks/${deckId}/createDeck`, {
+        const response = await axios.post(`http://localhost:5173/Decks/${deckId}/createDeck`, {
           Deck: postDeck,
           NewCards: newCards,
           RemovedCards: removeCards,
@@ -373,7 +373,7 @@ export default function EditDeck() {
           const deckGuid = response.data;
           if (deckGuid) {
             const deckGuidString = deckGuid.toString();
-            window.location.href = `https://localhost:5173/decks/${deckGuidString}`;
+            window.location.href = `http://localhost:5173/decks/${deckGuidString}`;
           } else {
             console.error('No deckGuid returned in response.');
           }

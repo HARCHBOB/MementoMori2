@@ -21,7 +21,7 @@ export function Register() {
 
   const { mutate: register, isPending } = useMutation({
     mutationFn: () => {
-      return axios.post<string>('/auth/register', {
+      return axios.post<string>('http://localhost:5173/auth/register', {
         username,
         password,
         rememberMe,

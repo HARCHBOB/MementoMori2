@@ -35,7 +35,7 @@ export default function Browser() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (params: { searchString: string; selectedTags: string[] }) => {
-      return axios.get<browserRowData[]>('/DeckBrowser/getDecks', {
+      return axios.get<browserRowData[]>('http://localhost:5173/DeckBrowser/getDecks', {
         params: params,
         paramsSerializer: { indexes: null },
       });

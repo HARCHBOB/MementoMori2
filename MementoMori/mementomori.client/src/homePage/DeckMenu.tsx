@@ -34,7 +34,7 @@ export default function DeckMenu() {
   async function fetchCollectionDecks() {
     try {
       const response = await axios.get<UserInformationResponse>(
-        `/UserDecks/userCollectionDecksController`
+        `http://localhost:5173/UserDecks/userCollectionDecksController`
       );
       setCollectionDecks(response.data.decks);
     } catch (error) {
@@ -46,7 +46,7 @@ export default function DeckMenu() {
     async function fetchDeck() {
       try {
         const response = await axios.get<UserInformationResponse>(
-          `/UserDecks/userInformation`
+          `http://localhost:5173/UserDecks/userInformation`
         );
         setIsLoggedOn(response.data.isLoggedIn);
         setDecks(response.data.decks);
@@ -61,7 +61,7 @@ export default function DeckMenu() {
   const handleDelete = async () => {
     if (deckToDelete) {
       try {
-        await axios.post(`/UserDecks/userCollectionRemoveDeckController`, {
+        await axios.post(`http://localhost:5173/UserDecks/userCollectionRemoveDeckController`, {
           Id: deckToDelete,
         });
         await fetchCollectionDecks();
@@ -173,7 +173,7 @@ export default function DeckMenu() {
                       <ListItemText
                         primary={deck.title}
                         onClick={() =>
-                          (window.location.href = `https://localhost:5173/decks/${deck.id}`)
+                          (window.location.href = `http://localhost:5173/decks/${deck.id}`)
                         }
                       />
                       <IconButton onClick={() => handleOpenDialog(deck.id)}>
@@ -231,7 +231,7 @@ export default function DeckMenu() {
                   <ListItem
                     disableGutters
                     onClick={() =>
-                      (window.location.href = `https://localhost:5173/decks/${deck.id}`)
+                      (window.location.href = `http://localhost:5173/decks/${deck.id}`)
                     }
                     sx={{
                       cursor: 'pointer',

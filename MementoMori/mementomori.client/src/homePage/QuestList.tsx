@@ -30,11 +30,11 @@ export default function QuestList() {
   useEffect(() => {
     const fetchQuests = async () => {
       try {
-        const response = await axios.get('quests.json');
+        const response = await axios.get('http://localhost:5173/quests.json');
         setQuestData(response.data);
         setIsLoading(false);
 
-        //const isCompleteResponse = await axios.get('/Quest/isComplete');
+        //const isCompleteResponse = await axios.get('http://localhost:5173/Quest/isComplete');
         //setIsComplete(isCompleteResponse.data);
       } catch (error) {
         console.error('Error fetching quests:', error);

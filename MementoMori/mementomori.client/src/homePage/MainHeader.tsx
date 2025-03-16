@@ -24,7 +24,7 @@ export default function MainHeader() {
   const handleAuthDialogClose = async () => {
     setIsAuthDialogVisible(false);
 
-    const response = await axios.get('/auth/loginResponse');
+    const response = await axios.get('http://localhost:5173/auth/loginResponse');
     setIsLoggedIn(response.data);
   };
 
@@ -38,7 +38,7 @@ export default function MainHeader() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/auth/logout');
+      const response = await axios.post('http://localhost:5173/auth/logout');
       if (response.status === 200) {
         setIsLoggedIn(false);
         location.reload();
@@ -53,7 +53,7 @@ export default function MainHeader() {
   useEffect(() => {
     const fetchLoginStatus = async () => {
       try {
-        const response = await axios.get('/auth/loginResponse');
+        const response = await axios.get('http://localhost:5173/auth/loginResponse');
         setIsLoggedIn(response.data);
       } catch (error) {
         console.error('Error fetching login status:', error);
@@ -111,7 +111,7 @@ export default function MainHeader() {
             style={{ textTransform: 'capitalize' }}
             variant="text"
             onClick={() =>
-              (window.location.href = `https://localhost:5173/shop`)
+              (window.location.href = `http://localhost:5173/shop`)
             }
           >
             Shop
