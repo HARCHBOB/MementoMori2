@@ -1,0 +1,37 @@
+name: .NET CI/CD
+
+permissions:
+  packages: write
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: |
+          dotnet restore ./MementoMori/MementoMori.Server
+          dotnet restore ./MementoMori/MementoMori.Tests
+
+      - name: Build
+        run: |
+          dotnet build ./MementoMori/MementoMori.Server --configuration Release --no-restore
+          dotnet build ./MementoMori/MementoMori.Tests --configuration Release --no-restore
+
+      - name: Test
+        run: |
+          rm -rf ./QuizCraft.Domain.API/Migrations
+          dotnet test ./MementoMori/MementoMori.Tests --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
