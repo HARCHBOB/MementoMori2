@@ -20,15 +20,17 @@ public class DeckBrowserController(IDeckHelper deckHelper, IAuthService authServ
         var filteredDecksList = await _deckHelper.Filter(titleSubstring: searchString, selectedTags: selectedTags, userId: requesterId);
         filteredDecksList.Sort();
 
-        var result = filteredDecksList.Select(deck => new DeckBrowserDTO
-        {
-            Id = deck.Id,
-            Title = deck.Title,
-            Rating = deck.Rating,
-            Modified = deck.Modified,
-            Cards = deck.Cards.Count,
-            Tags = deck.TagsToString(),
-        }).ToArray();
+        var result = filteredDecksList
+            .Select(deck => new DeckBrowserDTO
+            {
+                Id = deck.Id,
+                Title = deck.Title,
+                Rating = deck.Rating,
+                Modified = deck.Modified,
+                Cards = deck.Cards.Count,
+                Tags = deck.TagsToString(),
+            })
+            .ToArray();
 
         return Ok(result);
     }

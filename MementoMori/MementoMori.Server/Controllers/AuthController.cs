@@ -20,14 +20,12 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
         _authRepo = authRepo;
+        
         if (!initialized)
         {
-
-            var users = _authRepo.GetAllUsers();
-            foreach (var user in users)
-            {
+            foreach (var user in _authRepo.GetAllUsers())
                 _registeredUsers.TryAdd(user.Username, user);
-            }
+
             initialized = true;
         }
     }
@@ -36,9 +34,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Register([FromBody] RegisterDetails registerDetails)
     {
         if (_registeredUsers.ContainsKey(registerDetails.Username))
-        {
             return Conflict(new { Message = "Username is already taken." });
-        }
 
         var placeholderUser = new User
         {
@@ -47,6 +43,7 @@ public class AuthController : ControllerBase
             Id = Guid.Empty,
             CardColor = "white"
         };
+
         _registeredUsers.TryAdd(registerDetails.Username, placeholderUser);
 
         var user = await _authRepo.CreateUserAsync(registerDetails);
@@ -64,11 +61,8 @@ public class AuthController : ControllerBase
         try
         {
             var user = await _authRepo.GetUserByUsernameAsync(loginDetails.Username);
-            bool isValidPassword = _authService.VerifyPassword(loginDetails.Password, user.Password);
-            if (!isValidPassword)
-            {
+            if (!_authService.VerifyPassword(loginDetails.Password, user.Password))
                 return Unauthorized();
-            }
 
             _authService.AddCookie(HttpContext, user.Id, loginDetails.RememberMe);
 
@@ -84,14 +78,15 @@ public class AuthController : ControllerBase
     public IActionResult GetLoginResponse()
     {
         var userId = _authService.GetRequesterId(HttpContext);
-        bool isLoggedIn = userId.HasValue;
-        return Ok(isLoggedIn);
+
+        return Ok(userId.HasValue);
     }
 
     [HttpPost("logout")]
     public IActionResult Logout()
     {
         _authService.RemoveCookie(HttpContext);
+        
         return Ok();
     }
 

@@ -98,7 +98,7 @@ public class DecksController(IDeckHelper deckHelper, IAuthService authService, I
         var user = await _authRepo.GetUserByIdAsync((Guid)userId);
         List<Card> dueForReviewCards = _cardService.GetCardsForReview(deckId, userId.Value);
 
-        if (user == null) 
+        if (user == null)
         {
             return BadRequest(new { errorCode = "InvalidInput", message = "Invalid deck or user ID." });
         }
@@ -115,37 +115,34 @@ public class DecksController(IDeckHelper deckHelper, IAuthService authService, I
             Description = c.Description,
             Answer = c.Answer
         }).ToList();
-        
-        return Ok(new { Cards=dueCardDtos, Color=user.CardColor });
+
+        return Ok(new { Cards = dueCardDtos, Color = user.CardColor });
     }
     [HttpPost("addToCollection")]
     public IActionResult AddCardsToCollection(Guid deckId)
     {
         Guid? userId = _authService.GetRequesterId(HttpContext);
 
-        if(deckId == Guid.Empty || userId == Guid.Empty || userId == null )
-        {
+        if (deckId == Guid.Empty || userId == Guid.Empty || userId == null)
             return BadRequest(new { errorCode = "InvalidInput", message = "Invalid deck or user ID." });
-        }
-        if(userId != null)
-            _cardService.AddCardsToCollection((Guid)userId, deckId); 
+
+        if (userId != null)
+            _cardService.AddCardsToCollection(userId.Value, deckId);
 
         return Ok();
     }
-            
+
     [HttpPost("cards/update/{cardId}")]
     public async Task<IActionResult> UpdateCard(Guid deckId, Guid cardId, [FromBody] int quality)
     {
         Guid? userId = _authService.GetRequesterId(HttpContext);
 
         if (deckId == Guid.Empty || userId == null || cardId == Guid.Empty)
-        {
             return BadRequest(new { errorCode = "InvalidInput", message = "Invalid deck, card, or user ID." });
-        }
 
         try
         {
-            await _cardService.UpdateSpacedRepetition((Guid)userId, deckId, cardId, quality);
+            await _cardService.UpdateSpacedRepetition(userId.Value, deckId, cardId, quality);
             return Ok();
         }
         catch (KeyNotFoundException ex)
@@ -181,6 +178,7 @@ public class DecksController(IDeckHelper deckHelper, IAuthService authService, I
         var requesterId = _authService.GetRequesterId(HttpContext);
         if (requesterId == null)
             return Unauthorized();
+        
         try
         {
             var newDeckId = await _deckHelper.CreateDeckAsync(createDeckDTO, (Guid)requesterId);
@@ -191,6 +189,7 @@ public class DecksController(IDeckHelper deckHelper, IAuthService authService, I
             return StatusCode(500);
         }
     }
+
     [HttpPost("deleteDeck")]
     public async Task<ActionResult> DeleteDeck(Guid deckId)
     {
@@ -204,27 +203,21 @@ public class DecksController(IDeckHelper deckHelper, IAuthService authService, I
             }
             else
                 return Unauthorized();
-
         }
         catch
         {
             return StatusCode(500);
         }
-    
+
     }
     [HttpGet("DeckTitle")]
     public async Task<IActionResult> GetDeckTitle(Guid deckId)
     {
-
         var deck = await _deckHelper.GetDeckAsync(deckId);
 
         if (deck == null)
-        {
             return NotFound(new { errorCode = ErrorCode.NotFound, message = "Deck not found." });
-        }
 
         return Ok(deck.Title);
-
     }
-
 }
