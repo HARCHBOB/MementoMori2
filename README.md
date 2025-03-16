@@ -14,7 +14,7 @@ alter user postgres with encyrpted password 'SuperSecretPassword';
 grant all privileges on database "MementoMori" to postgres;
 \q
 
-cd MementoMori/MementoMori.Server
+cd ./MementoMori.API
 dotnet tool install --global dotnet-ef
 dotnet ef database update
 
