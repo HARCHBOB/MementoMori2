@@ -2,7 +2,5 @@
 
 public class UserNotFoundException : Exception
 {
-    public UserNotFoundException() : base("This user does not exist") 
-    {
-    }
+    public UserNotFoundException() : base("This user does not exist") { }
 }

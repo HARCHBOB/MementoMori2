@@ -1,4 +1,5 @@
-using MementoMori.API.Interfaces;
+using MementoMori.API.Models;
+using MementoMori.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MementoMori.API.Controllers;
@@ -15,11 +16,9 @@ public class ShopController(IAuthService authService, IAuthRepo authRepo) : Cont
     {
         var userId = _authService.GetRequesterId(HttpContext);
         if (userId == null)
-        {
             return Unauthorized();
-        }
 
-        await _authRepo.UpdateUserCardColor((Guid)userId, request.NewColor);
+        await _authRepo.UpdateUserCardColor(userId.Value, request.NewColor);
 
         return Ok();
     }

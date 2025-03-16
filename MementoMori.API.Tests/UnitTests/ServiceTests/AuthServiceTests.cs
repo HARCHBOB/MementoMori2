@@ -1,14 +1,14 @@
-using MementoMori.API.Database;
-using MementoMori.API.Service;
-using MementoMori.API.Models;
+using MementoMori.API.Data;
+using MementoMori.API.Services;
+using MementoMori.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Microsoft.AspNetCore.Http;
-using MementoMori.API.DTOS;
+using MementoMori.API.Models;
 using MementoMori.API.Exceptions;
 using System.Security.Claims;
 
-namespace MementoMori.Tests.UnitTests.ServiceTests;
+namespace MementoMori.API.Tests.UnitTests.ServiceTests;
 
 public class AuthServiceTests
 {
@@ -154,7 +154,7 @@ public class AuthServiceTests
         var userId = Guid.NewGuid();
         _mockHttpContext.Setup(ctx => ctx.User.Claims).Returns(new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+            new(ClaimTypes.NameIdentifier, userId.ToString())
         });
 
         var result = _authService.GetRequesterId(_mockHttpContext.Object);

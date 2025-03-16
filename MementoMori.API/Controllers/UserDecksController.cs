@@ -1,6 +1,6 @@
-using MementoMori.API.DTOS;
-using MementoMori.API.Interfaces;
 using MementoMori.API.Models;
+using MementoMori.API.Services;
+using MementoMori.API.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MementoMori.API.Controllers;
@@ -9,16 +9,13 @@ namespace MementoMori.API.Controllers;
 [Route("[controller]")]
 public class UserDecksController(IDeckHelper deckHelper, IAuthService authService) : ControllerBase
 {
-    private readonly IAuthService _authService = authService;
-    private readonly IDeckHelper _deckHelper = deckHelper;
-
     [HttpGet("userInformation")]
-    public async Task<ActionResult> UserInformation()
+    public ActionResult UserInformation()
     {
-        var requesterId = _authService.GetRequesterId(HttpContext);
+        var requesterId = authService.GetRequesterId(HttpContext);
         if (requesterId != null)
         {
-            var userDecks = await _deckHelper.GetUserDecks((Guid)requesterId);
+            var userDecks = deckHelper.GetUserDecks((Guid)requesterId);
             var userInfo = new UserDeckInformationDTO{
                 Decks = userDecks ?? [],
                 IsLoggedIn = true,
@@ -34,12 +31,12 @@ public class UserDecksController(IDeckHelper deckHelper, IAuthService authServic
 
     }
     [HttpGet("userCollectionDecksController")]
-    public async Task<ActionResult> UserCollectionDecksController()
+    public ActionResult UserCollectionDecksController()
     {
-        var requesterId = _authService.GetRequesterId(HttpContext);
+        var requesterId = authService.GetRequesterId(HttpContext);
         if (requesterId != null)
         {
-            var userDecks = await _deckHelper.GetUserCollectionDecks((Guid)requesterId);
+            var userDecks = deckHelper.GetUserCollectionDecks((Guid)requesterId);
             var userInfo = new UserDeckInformationDTO
             {
                 Decks = userDecks ?? [],
@@ -55,14 +52,15 @@ public class UserDecksController(IDeckHelper deckHelper, IAuthService authServic
     }
 
     [HttpPost("userCollectionRemoveDeckController")]
-    public async Task<ActionResult> UserCollectionRemoveDeckController(DatabaseObject deckId)
+    public ActionResult UserCollectionRemoveDeckController(DatabaseObject deckId)
     {
-        var requesterId = _authService.GetRequesterId(HttpContext);
+        var requesterId = authService.GetRequesterId(HttpContext);
         if (deckId.Id == Guid.Empty)
             return StatusCode(400);
+
         if (requesterId != null)
         {
-            await _deckHelper.DeleteUserCollectionDeck(deckId.Id, (Guid) requesterId);
+            deckHelper.DeleteUserCollectionDeck(deckId.Id, (Guid) requesterId);
             return Ok();
         }
         else

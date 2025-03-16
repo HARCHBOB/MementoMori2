@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MementoMori.API.Controllers;
-using MementoMori.API.Interfaces;
-using MementoMori.API.DTOS;
+using MementoMori.API.Services;
 using MementoMori.API.Models;
-using MementoMori.API;
+using MementoMori.API.Entities;
 using MementoMori.API.Exceptions;
-using MementoMori.API.Service;
+using MementoMori.API.Constants;
 
-namespace MementoMori.Tests.UnitTests.ControllerTests
+namespace MementoMori.API.Tests.UnitTests.ControllerTests
 {
     public class DecksControllerTests
     {
@@ -36,30 +35,30 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task ViewAsync_ReturnsNotFound_WhenDeckNotExists()
+        public void ViewAsync_ReturnsNotFound_WhenDeckNotExists()
         {
             var deckId = Guid.NewGuid();
             _mockDeckHelper
                 .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, null))
-                .ReturnsAsync(new List<Deck>());
+                .Returns([]);
 
-            var result = await _controller.ViewAsync(deckId);
+            var result = _controller.ViewAsync(deckId);
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
         [Fact]
-        public async Task ViewAsync_ReturnsBadRequest_WhenGuidEmpty()
+        public void ViewAsync_ReturnsBadRequest_WhenGuidEmpty()
         {
             var deckId = Guid.Empty;
 
-            var result = await _controller.ViewAsync(deckId);
+            var result = _controller.ViewAsync(deckId);
 
-                Assert.IsType<BadRequestObjectResult>(result);
-            }
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
 
         [Fact]
-        public async Task ViewAsync_ReturnsDeckDTO_WhenDeckExists()
+        public void ViewAsync_ReturnsDeckDTO_WhenDeckExists()
         {
             var deckId = Guid.NewGuid();
             var creatorId = Guid.NewGuid();
@@ -71,80 +70,81 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 CardCount = 1,
                 Modified = DateOnly.FromDateTime(DateTime.UtcNow),
                 Rating = 4.5,
-                isPublic = true,
-                Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                IsPublic = true,
+                Tags = [TagTypes.Music, TagTypes.Mathematics],
                 Description = "Test Description",
-                Cards = new List<Card> { new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" } }
+                Cards = [new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" }]
             };
             _mockDeckHelper
                 .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, It.Is<Guid?>(id => id == creatorId)))
-                .ReturnsAsync([deck]);
+                .Returns([deck]);
+
             _mockAuthService
                 .Setup(a => a.GetRequesterId(It.IsAny<HttpContext>()))
                 .Returns(creatorId);
 
-                    var result = await _controller.ViewAsync(deckId);
+            var result = _controller.ViewAsync(deckId);
 
-                    var okResult = Assert.IsType<OkObjectResult>(result);
-                    var deckDTO = Assert.IsType<DeckDTO>(okResult.Value);
-                    Assert.Equal(deckId, deckDTO.Id);
-                    Assert.Equal("TestUser", deckDTO.CreatorName);
-                    Assert.Equal(1, deckDTO.CardCount);
-                    Assert.True(deckDTO.IsOwner);
-                }
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var deckDTO = Assert.IsType<DeckDTO>(okResult.Value);
+            Assert.Equal(deckId, deckDTO.Id);
+            Assert.Equal("TestUser", deckDTO.CreatorName);
+            Assert.Equal(1, deckDTO.CardCount);
+            Assert.True(deckDTO.IsOwner);
+        }
 
-            [Fact]
-            public async Task EditorViewAsync_ReturnsBadRequest_WhenGuidEmpty()
+        [Fact]
+        public void EditorViewAsync_ReturnsBadRequest_WhenGuidEmpty()
+        {
+            var deckId = Guid.Empty;
+
+            var result = _controller.EditorViewAsync(deckId);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void EditorView_ReturnsNotFound_WhenDeckNotExists()
+        {
+            var deckId = Guid.NewGuid();
+            _mockDeckHelper
+                .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, null))
+                .Returns([]);
+
+            var result = _controller.EditorViewAsync(deckId);
+
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        [Fact]
+        public void EditorViewAsync_ReturnsDeckEditorDTO_WhenDeckExists()
+        {
+            var deckId = Guid.NewGuid();
+            var deck = new Deck
             {
-                var deckId = Guid.Empty;
-
-                var result = await _controller.EditorViewAsync(deckId);
-
-                Assert.IsType<BadRequestObjectResult>(result);
-            }
-
-
-            [Fact]
-            public async Task EditorView_ReturnsNotFound_WhenDeckNotExists()
-            {
-                var deckId = Guid.NewGuid();
-                _mockDeckHelper
-                    .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, null))
-                    .ReturnsAsync([]);
-
-                var result = await _controller.EditorViewAsync(deckId);
-
-                Assert.IsType<NotFoundObjectResult>(result);
-            }
-
-            [Fact]
-            public async Task EditorViewAsync_ReturnsDeckEditorDTO_WhenDeckExists()
-            {
-                var deckId = Guid.NewGuid();
-                var deck = new Deck
-                {
-                    Id = deckId,
-                    Title = "Editable Deck",
-                    isPublic = true,
-                    Modified = DateOnly.MaxValue,
-                    CardCount = 2,
-                    Description = "Editable Description",
-                    Cards = new List<Card>
-                {
+                Id = deckId,
+                Title = "Editable Deck",
+                IsPublic = true,
+                Modified = DateOnly.MaxValue,
+                CardCount = 2,
+                Description = "Editable Description",
+                Cards =
+                [
                     new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" },
                     new Card { Id = Guid.NewGuid(), Question = "Q2", Answer = "A2" }
-                }
-                };
+                ]
+            };
 
 
-                _mockDeckHelper
-                    .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, null))
-                    .ReturnsAsync([deck]);
+            _mockDeckHelper
+                .Setup(d => d.Filter(It.Is<Guid[]>(ids => ids.Contains(deckId)), null, null, null))
+                .Returns([deck]);
 
-                var result = await _controller.EditorViewAsync(deckId);
+            var result = _controller.EditorViewAsync(deckId);
 
-                var okResult = Assert.IsType<OkObjectResult>(result);
-                var editorDTO = Assert.IsType<DeckEditorDTO>(okResult.Value);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var editorDTO = Assert.IsType<DeckEditorDTO>(okResult.Value);
 
             Assert.Equal(deckId, editorDTO.Id);
             Assert.True(editorDTO.isPublic);
@@ -153,7 +153,7 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
             Assert.Equal("Q1", editorDTO.Cards?.First().Question);
         }
         [Fact]
-        public async Task CreateDeck_Unautherized()
+        public void CreateDeck_Unautherized()
         {
             _mockAuthService
                 .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
@@ -165,10 +165,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = deckId,
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Test Deck",
                     Description = "Test Description",
-                    Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                    Tags = [TagTypes.Music, TagTypes.Mathematics],
                 },
                 NewCards = [
                     new Card{
@@ -181,8 +181,8 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                     Answer = "A2"}
                 ]
             };
-            var result = await _controller.CreateDeck(deck);
-            Assert.IsType<UnauthorizedResult>(result.Result);
+            var result = _controller.CreateDeck(deck);
+            Assert.IsType<UnauthorizedResult>(result);
         }
         [Fact]
         public async Task CreateDeck_ValidRequest_ReturnsOk()
@@ -203,10 +203,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = newDeckId,
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Test Deck",
                     Description = "Test Description",
-                    Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                    Tags = [TagTypes.Music, TagTypes.Mathematics],
                 },
                 NewCards = [
                     new Card{
@@ -247,10 +247,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = newDeckId,
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Test Deck",
                     Description = "Test Description",
-                    Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                    Tags = [TagTypes.Music, TagTypes.Mathematics],
                 },
                 NewCards = [
                     new Card{
@@ -276,7 +276,7 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
             var requesterId = Guid.NewGuid();
             _mockAuthService
                 .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
-                .Returns((Guid)requesterId);
+                .Returns(requesterId);
             var deckId = Guid.NewGuid();
             _mockDeckHelper
                 .Setup(helper => helper.DeleteDeckAsync(deckId, requesterId))
@@ -321,10 +321,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = Guid.NewGuid(),
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Updated Title",
                     Description = "Updated Description",
-                    Tags = new List<TagTypes> { TagTypes.Mathematics }
+                    Tags = [TagTypes.Mathematics]
                 }
             };
 
@@ -346,10 +346,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = Guid.NewGuid(),
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Updated Title",
                     Description = "Updated Description",
-                    Tags = new List<TagTypes> { TagTypes.Mathematics }
+                    Tags = [TagTypes.Mathematics]
                 }
             };
 
@@ -370,10 +370,10 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 Deck = new DeckEditableProperties
                 {
                     Id = Guid.NewGuid(),
-                    isPublic = true,
+                    IsPublic = true,
                     Title = "Updated Title",
                     Description = "Updated Description",
-                    Tags = new List<TagTypes> { TagTypes.Mathematics }
+                    Tags = [TagTypes.Mathematics]
                 }
             };
 
@@ -390,8 +390,8 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void AddCardsToCollection_ValidData_ReturnsOkResult(){
-
+        public void AddCardsToCollection_ValidData_ReturnsOkResult()
+        {
             var deckId = Guid.NewGuid();
             var userId = Guid.NewGuid();
             var deck = new Deck
@@ -402,11 +402,11 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 CardCount = 1,
                 Modified = DateOnly.FromDateTime(DateTime.UtcNow),
                 Rating = 4.5,
-                isPublic = true,
-                Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                IsPublic = true,
+                Tags = [TagTypes.Music, TagTypes.Mathematics],
                 Description = "Test Description",
                 RatingCount = 1,
-                Cards = new List<Card> { new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" } }
+                Cards = [new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" }]
             };
 
             _mockAuthService.Setup(a => a.GetRequesterId(It.IsAny<HttpContext>())).Returns(userId);
@@ -476,19 +476,19 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
 
 
         [Fact]
-        public async Task GetDeckTitle_ReturnsNotFound_WhenDeckDoesNotExist()
+        public void GetDeckTitle_ReturnsNotFound_WhenDeckDoesNotExist()
         {
             var deckId = Guid.NewGuid();
-            _mockDeckHelper.Setup(helper => helper.GetDeckAsync(deckId)).ReturnsAsync((Deck)null);
+            _mockDeckHelper.Setup(helper => helper.GetDeckAsync(deckId)).Returns((Deck?) null);
 
-            var result = await _controller.GetDeckTitle(deckId);
+            var result = _controller.GetDeckTitle(deckId);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, notFoundResult.StatusCode);
         }
 
         [Fact]
-        public async Task GetDeckTitle_ReturnsOk_WithDeckTitle()
+        public void GetDeckTitle_ReturnsOk_WithDeckTitle()
         {
             var deckId = Guid.NewGuid();
             var deck = new Deck
@@ -499,14 +499,14 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
                 CardCount = 1,
                 Modified = DateOnly.FromDateTime(DateTime.UtcNow),
                 Rating = 4.5,
-                isPublic = true,
-                Tags = new List<TagTypes> { TagTypes.Music, TagTypes.Mathematics },
+                IsPublic = true,
+                Tags = [TagTypes.Music, TagTypes.Mathematics],
                 Description = "Test Description",
-                Cards = new List<Card> { new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" } }
+                Cards = [new Card { Id = Guid.NewGuid(), Question = "Q1", Answer = "A1" }]
             };
-            _mockDeckHelper.Setup(helper => helper.GetDeckAsync(deckId)).ReturnsAsync(deck);
+            _mockDeckHelper.Setup(helper => helper.GetDeckAsync(deckId)).Returns(deck);
 
-            var result = await _controller.GetDeckTitle(deckId);
+            var result = _controller.GetDeckTitle(deckId);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal("Test Deck", okResult.Value);
@@ -519,7 +519,7 @@ namespace MementoMori.Tests.UnitTests.ControllerTests
 
             _mockAuthService
                 .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
-                .Returns((Guid?)null);
+                .Returns((Guid?) null);
 
             var result = await _controller.GetDueCards(invalidDeckId);
 

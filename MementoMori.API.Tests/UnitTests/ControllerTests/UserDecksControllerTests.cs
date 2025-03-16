@@ -2,9 +2,11 @@ using Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MementoMori.API.Controllers;
-using MementoMori.API.Interfaces;
-using MementoMori.API.DTOS;
+using MementoMori.API.Services;
 using MementoMori.API.Models;
+using MementoMori.API.Entities;
+
+namespace MementoMori.API.Tests.UnitTests.ControllerTests;
 
 public class UserDecksControllerTests
 {    
@@ -26,9 +28,8 @@ public class UserDecksControllerTests
         };
     }
 
-
     [Fact]
-    public async Task UserCollectionDecksController_ReturnsUserDecks_WhenRequesterIdIsValid()
+    public void UserCollectionDecksController_ReturnsUserDecks_WhenRequesterIdIsValid()
     {
         var requesterId = Guid.NewGuid();
         var expectedDecks = new[]
@@ -41,9 +42,9 @@ public class UserDecksControllerTests
             .Returns(requesterId);
         _mockDeckHelper
             .Setup(d => d.GetUserCollectionDecks(requesterId))
-            .ReturnsAsync(expectedDecks);
+            .Returns(expectedDecks);
 
-        var result = await _controller.UserCollectionDecksController();
+        var result = _controller.UserCollectionDecksController();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var userInfo = Assert.IsType<UserDeckInformationDTO>(okResult.Value);
 
@@ -53,12 +54,12 @@ public class UserDecksControllerTests
     }
 
     [Fact]
-    public async Task UserCollectionDecksController_ReturnsLoggedOutUser_WhenRequesterIdIsNull()
+    public void UserCollectionDecksController_ReturnsLoggedOutUser_WhenRequesterIdIsNull()
     {
         _mockAuthService
             .Setup(s => s.GetRequesterId(It.IsAny<HttpContext>()))
-            .Returns((Guid?)null);
-        var result = await _controller.UserCollectionDecksController();
+            .Returns((Guid?) null);
+        var result = _controller.UserCollectionDecksController();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var userInfo = Assert.IsType<UserDeckInformationDTO>(okResult.Value);
         Assert.False(userInfo.IsLoggedIn);
@@ -66,40 +67,40 @@ public class UserDecksControllerTests
     }
 
     [Fact]
-    public async Task UserCollectionRemoveDeckController_ReturnsBadRequest_WhenDeckIdIsEmpty()
+    public void UserCollectionRemoveDeckController_ReturnsBadRequest_WhenDeckIdIsEmpty()
     {
         var invalidDeckId = new DatabaseObject { Id = Guid.Empty };
-        var result = await _controller.UserCollectionRemoveDeckController(invalidDeckId);
+        var result = _controller.UserCollectionRemoveDeckController(invalidDeckId);
         var actionResult = Assert.IsType<StatusCodeResult>(result);
         Assert.Equal(400, actionResult.StatusCode);
     }
 
     [Fact]
-    public async Task UserCollectionRemoveDeckController_ReturnsUnauthorized_WhenRequesterIdIsNull()
+    public void UserCollectionRemoveDeckController_ReturnsUnauthorized_WhenRequesterIdIsNull()
     {
         var validDeckId = new DatabaseObject { Id = Guid.NewGuid() };
         _mockAuthService
             .Setup(s => s.GetRequesterId(It.IsAny<HttpContext>()))
             .Returns((Guid?)null);
-        var result = await _controller.UserCollectionRemoveDeckController(validDeckId);
+        var result = _controller.UserCollectionRemoveDeckController(validDeckId);
         Assert.IsType<UnauthorizedResult>(result);
     }
 
     [Fact]
-    public async Task UserCollectionRemoveDeckController_CallsDeleteUserCollectionDeck_WhenRequesterIdIsValid()
+    public void UserCollectionRemoveDeckController_CallsDeleteUserCollectionDeck_WhenRequesterIdIsValid()
     {
         var validDeckId = new DatabaseObject { Id = Guid.NewGuid() };
         var requesterId = Guid.NewGuid();
         _mockAuthService
             .Setup(s => s.GetRequesterId(It.IsAny<HttpContext>()))
             .Returns(requesterId);
-        var result = await _controller.UserCollectionRemoveDeckController(validDeckId);
+        var result = _controller.UserCollectionRemoveDeckController(validDeckId);
         _mockDeckHelper.Verify(d => d.DeleteUserCollectionDeck(validDeckId.Id, requesterId), Times.Once);
         Assert.IsType<OkResult>(result);
     }
 
     [Fact]
-    public async Task UserCollectionRemoveDeckController_ReturnsOk_WhenDeckIsDeletedSuccessfully()
+    public void UserCollectionRemoveDeckController_ReturnsOk_WhenDeckIsDeletedSuccessfully()
     {
         var validDeckId = new DatabaseObject { Id = Guid.NewGuid() };
         var requesterId = Guid.NewGuid();
@@ -108,14 +109,14 @@ public class UserDecksControllerTests
             .Setup(s => s.GetRequesterId(It.IsAny<HttpContext>()))
             .Returns(requesterId);
         _mockDeckHelper
-            .Setup(d => d.DeleteUserCollectionDeck(It.IsAny<Guid>(), It.IsAny<Guid>()))
-            .Returns(Task.CompletedTask);
-        var result = await _controller.UserCollectionRemoveDeckController(validDeckId);
+            .Setup(d => d.DeleteUserCollectionDeck(It.IsAny<Guid>(), It.IsAny<Guid>()));
+
+        var result = _controller.UserCollectionRemoveDeckController(validDeckId);
         Assert.IsType<OkResult>(result);
     }
 
     [Fact]
-    public async Task UserInformation_ReturnsUserDecks_WhenUserIsLoggedIn()
+    public void UserInformation_ReturnsUserDecks_WhenUserIsLoggedIn()
     {
         var requesterId = Guid.NewGuid();
         var userDecks = new[]
@@ -127,9 +128,9 @@ public class UserDecksControllerTests
         _mockAuthService.Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
             .Returns(requesterId);
         _mockDeckHelper.Setup(helper => helper.GetUserDecks(requesterId))
-            .ReturnsAsync(userDecks);
+            .Returns(userDecks);
 
-        var result = await _controller.UserInformation();
+        var result = _controller.UserInformation();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var userInfo = Assert.IsType<UserDeckInformationDTO>(okResult.Value);
 
@@ -140,12 +141,12 @@ public class UserDecksControllerTests
     }
 
     [Fact]
-    public async Task UserInformation_ReturnsEmptyDecks_WhenUserIsNotLoggedIn()
+    public void UserInformation_ReturnsEmptyDecks_WhenUserIsNotLoggedIn()
     {
         _mockAuthService.Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
-            .Returns((Guid?)null);
+            .Returns((Guid?) null);
 
-        var result = await _controller.UserInformation();
+        var result = _controller.UserInformation();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var userInfo = Assert.IsType<UserDeckInformationDTO>(okResult.Value);
         Assert.False(userInfo.IsLoggedIn);
@@ -153,16 +154,16 @@ public class UserDecksControllerTests
     }
 
     [Fact]
-    public async Task UserInformation_ReturnsEmptyDecks_WhenUserHasNoDecks()
+    public void UserInformation_ReturnsEmptyDecks_WhenUserHasNoDecks()
     {
         var requesterId = Guid.NewGuid();
 
         _mockAuthService.Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
             .Returns(requesterId);
         _mockDeckHelper.Setup(helper => helper.GetUserDecks(requesterId))
-            .ReturnsAsync(Array.Empty<UserDeckDTO>());
+            .Returns([]);
 
-        var result = await _controller.UserInformation();
+        var result = _controller.UserInformation();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var userInfo = Assert.IsType<UserDeckInformationDTO>(okResult.Value);
 

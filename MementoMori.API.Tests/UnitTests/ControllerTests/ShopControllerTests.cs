@@ -2,62 +2,58 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MementoMori.API.Controllers;
-using MementoMori.API.Interfaces;
-using MementoMori.API.DTOS;
-using MementoMori.API.Exceptions;
+using MementoMori.API.Services;
+using MementoMori.API.Models;
 
-namespace MementoMori.Tests.UnitTests.ControllerTests
+namespace MementoMori.API.Tests.UnitTests.ControllerTests;
+
+public class ShopControllerTests
 {
-    public class ShopControllerTests
+    private readonly Mock<IAuthService> _mockAuthService;
+    private readonly Mock<IAuthRepo> _mockAuthRepo;
+    private readonly ShopController _controller;
+
+    public ShopControllerTests()
     {
-        private readonly Mock<IAuthService> _mockAuthService;
-        private readonly Mock<IAuthRepo> _mockAuthRepo;
-        private readonly ShopController _controller;
+        _mockAuthService = new Mock<IAuthService>();
+        _mockAuthRepo = new Mock<IAuthRepo>();
 
-        public ShopControllerTests()
+        _controller = new ShopController(_mockAuthService.Object, _mockAuthRepo.Object);
+
+        var httpContext = new DefaultHttpContext();
+        _controller.ControllerContext = new ControllerContext
         {
-            _mockAuthService = new Mock<IAuthService>();
-            _mockAuthRepo = new Mock<IAuthRepo>();
+            HttpContext = httpContext
+        };
+    }
 
-            _controller = new ShopController(_mockAuthService.Object, _mockAuthRepo.Object);
+    [Fact]
+    public async Task UpdateCardColor_ReturnsUnauthorized_WhenUserIdIsNull()
+    {
+        _mockAuthService
+            .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
+            .Returns((Guid?)null);
 
-            var httpContext = new DefaultHttpContext();
-            _controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-        }
+        var result = await _controller.UpdateCardColor(new() { NewColor = "Blue" });
 
-        [Fact]
-        public async Task UpdateCardColor_ReturnsUnauthorized_WhenUserIdIsNull()
-        {
-            var request = new UpdateColorRequest { NewColor = "Blue" };
+        Assert.IsType<UnauthorizedResult>(result);
+    }
 
-            _mockAuthService
-                .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
-                .Returns((Guid?)null);
-            var result = await _controller.UpdateCardColor(request);
+    [Fact]
+    public async Task UpdateCardColor_ReturnsOk_WhenUpdateSucceeds()
+    {
+        var userId = Guid.NewGuid();
 
-            Assert.IsType<UnauthorizedResult>(result);
-        }
+        _mockAuthService
+            .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
+            .Returns(userId);
 
-        [Fact]
-        public async Task UpdateCardColor_ReturnsOk_WhenUpdateSucceeds()
-        {
-            var userId = Guid.NewGuid();
-            var request = new UpdateColorRequest { NewColor = "Red" };
+        _mockAuthRepo
+            .Setup(repo => repo.UpdateUserCardColor(userId, "Red"))
+            .Returns(Task.CompletedTask);
 
-            _mockAuthService
-                .Setup(auth => auth.GetRequesterId(It.IsAny<HttpContext>()))
-                .Returns(userId);
+        var result = await _controller.UpdateCardColor(new() { NewColor = "Red" });
 
-            _mockAuthRepo
-                .Setup(repo => repo.UpdateUserCardColor(userId, request.NewColor))
-                .Returns(Task.CompletedTask);
-
-            var result = await _controller.UpdateCardColor(request);
-
-            Assert.IsType<OkResult>(result);
-        }
+        Assert.IsType<OkResult>(result);
     }
 }

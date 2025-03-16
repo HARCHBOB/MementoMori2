@@ -1,10 +1,7 @@
-using MementoMori.API.Service;
-using MementoMori.API.Database;
+using MementoMori.API.Services;
+using MementoMori.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using MementoMori.API.Interfaces;
-using System.Collections.Concurrent;
-using MementoMori.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
