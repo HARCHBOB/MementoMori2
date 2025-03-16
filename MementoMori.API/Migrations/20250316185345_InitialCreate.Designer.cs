@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MementoMori.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250316215049_InitialDatabaseMigration")]
-    partial class InitialDatabaseMigration
+    [Migration("20250316185345_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace MementoMori.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MementoMori.API.Card", b =>
+            modelBuilder.Entity("MementoMori.API.Entities.Card", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,7 +52,7 @@ namespace MementoMori.API.Migrations
                     b.ToTable("Cards");
                 });
 
-            modelBuilder.Entity("MementoMori.API.Deck", b =>
+            modelBuilder.Entity("MementoMori.API.Entities.Deck", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,6 +66,9 @@ namespace MementoMori.API.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
 
                     b.Property<DateOnly>("Modified")
                         .HasColumnType("date");
@@ -82,9 +85,6 @@ namespace MementoMori.API.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("isPublic")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -144,16 +144,16 @@ namespace MementoMori.API.Migrations
                     b.ToTable("UserCards");
                 });
 
-            modelBuilder.Entity("MementoMori.API.Card", b =>
+            modelBuilder.Entity("MementoMori.API.Entities.Card", b =>
                 {
-                    b.HasOne("MementoMori.API.Deck", null)
+                    b.HasOne("MementoMori.API.Entities.Deck", null)
                         .WithMany("Cards")
                         .HasForeignKey("DeckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MementoMori.API.Deck", b =>
+            modelBuilder.Entity("MementoMori.API.Entities.Deck", b =>
                 {
                     b.HasOne("MementoMori.API.Entities.User", "Creator")
                         .WithMany()
@@ -164,7 +164,7 @@ namespace MementoMori.API.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("MementoMori.API.Deck", b =>
+            modelBuilder.Entity("MementoMori.API.Entities.Deck", b =>
                 {
                     b.Navigation("Cards");
                 });

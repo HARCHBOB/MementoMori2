@@ -60,7 +60,7 @@ public class CardService(AppDbContext context, ISpacedRepetition spacedRepetitio
         var cardsForReview = 
             context.UserCards
                 .Where(uc => uc.DeckId == deckId
-                            && uc.UserId == userId && uc.LastReviewed.AddDays(uc.Interval) <= DateTime.Today)
+                            && uc.UserId == userId && uc.LastReviewed.AddDays(uc.Interval) <= DateTime.UtcNow.Date)
                 .Select(uc => uc.CardId)
                 .ToList();
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MementoMori.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDatabaseMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,7 +52,7 @@ namespace MementoMori.API.Migrations
                     RatingCount = table.Column<long>(type: "bigint", nullable: false),
                     Modified = table.Column<DateOnly>(type: "date", nullable: false),
                     CardCount = table.Column<long>(type: "bigint", nullable: false),
-                    isPublic = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPublic = table.Column<bool>(type: "boolean", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Tags = table.Column<int[]>(type: "integer[]", nullable: true)
