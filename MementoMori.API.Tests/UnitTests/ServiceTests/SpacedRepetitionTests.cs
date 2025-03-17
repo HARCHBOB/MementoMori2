@@ -1,7 +1,7 @@
 using System;
 using Xunit;
-using MementoMori.API.Models;
-using MementoMori.API.Service;
+using MementoMori.API.Entities;
+using MementoMori.API.Services;
 
 namespace MementoMori.Tests.UnitTests.ServiceTests
 {

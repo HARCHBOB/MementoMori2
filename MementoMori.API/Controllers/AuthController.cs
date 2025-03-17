@@ -1,7 +1,7 @@
-﻿using MementoMori.API.DTOS;
+﻿using MementoMori.API.Models;
 using MementoMori.API.Exceptions;
-using MementoMori.API.Interfaces;
-using MementoMori.API.Models;
+using MementoMori.API.Services;
+using MementoMori.API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 

@@ -1,6 +1,6 @@
-﻿using MementoMori.API.DTOS;
+﻿using MementoMori.API.Models;
 using MementoMori.API.Extensions;
-using MementoMori.API.Interfaces;
+using MementoMori.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MementoMori.API.Controllers;
@@ -13,11 +13,11 @@ public class DeckBrowserController(IDeckHelper deckHelper, IAuthService authServ
     private readonly IAuthService _authService = authService;
 
     [HttpGet("getDecks")]
-    public async Task<ActionResult<DeckBrowserDTO>> GetDecksAsync([FromQuery] string[] selectedTags, string? searchString)
+    public ActionResult<DeckBrowserDTO> GetDecksAsync([FromQuery] string[] selectedTags, string? searchString)
     {
         var requesterId = _authService.GetRequesterId(HttpContext);
 
-        var filteredDecksList = await _deckHelper.Filter(titleSubstring: searchString, selectedTags: selectedTags, userId: requesterId);
+        var filteredDecksList = _deckHelper.Filter(titleSubstring: searchString, selectedTags: selectedTags, userId: requesterId);
         filteredDecksList.Sort();
 
         var result = filteredDecksList
