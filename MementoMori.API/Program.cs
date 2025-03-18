@@ -15,6 +15,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepo, AuthRepo>();
 builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ISpacedRepetition, SpacedRepetition>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddControllers();
 
 builder.Services
