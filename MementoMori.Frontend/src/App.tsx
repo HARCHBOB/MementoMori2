@@ -8,6 +8,7 @@ import {Deck} from './components/Deck.tsx';
 import MainHeader from './components/MainHeader.tsx';
 import EditDeck from './pages/DeckEditor.tsx';
 import Shop from './pages/Shop.tsx';
+import {SupportPage} from './pages/Support.tsx';
 
 const client = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => {
           <Route path='/decks/:deckId/practice' element={<DeckPage />} />
           <Route path='/browser' element={<Browser />} />
           <Route path='/shop' element={<Shop />} />
+          <Route path='/support' element={<SupportPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

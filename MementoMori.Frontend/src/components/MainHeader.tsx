@@ -97,14 +97,21 @@ export default function MainHeader() {
 
         <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
           <Button
-            sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+            sx={{minWidth: 80, color: 'indigo', fontSize: 18, textTransform: 'capitalize'}}
+            variant='text'
+            onClick={() => navigate('/support')}
+          >
+            Support
+          </Button>
+          <Button
+            sx={{minWidth: 80, color: 'indigo', fontSize: 18, textTransform: 'capitalize'}}
             variant='text'
             onClick={() => navigate('/shop')}
           >
             Shop
           </Button>
           <Button
-            sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+            sx={{minWidth: 80, color: 'indigo', fontSize: 18, textTransform: 'capitalize'}}
             variant='text'
             onClick={() => navigate('/browser')}
           >
@@ -119,7 +126,7 @@ export default function MainHeader() {
             </Tooltip>
           ) : (
             <Button
-              sx={{minWidth: 150, color: 'indigo', fontSize: 20, textTransform: 'capitalize'}}
+              sx={{minWidth: 80, color: 'indigo', fontSize: 18, textTransform: 'capitalize'}}
               variant='text'
               onClick={() => setIsAuthDialogVisible(true)}
             >
